@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+.git
+.gitignore
+**/.env
+**/.env.*
+*.md
+!README.md
+.DS_Store
+server/data
+server/uploads
+frontend/dist

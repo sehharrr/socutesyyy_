@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Builds
+frontend/dist/
+**/dist/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Local data (SQLite + uploads)
+server/data/
+server/uploads/
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Cursor
+.cursor/

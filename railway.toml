@@ -1,0 +1,11 @@
+# Deploy from repository root (Dockerfile builds frontend + API + static).
+# Railway dashboard: connect GitHub repo, add Volume mount /data, set DATA_DIR=/data
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"

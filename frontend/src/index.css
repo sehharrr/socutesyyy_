@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+
+/* Reference palette: shop UI */
+@theme {
+  --color-shop-pink: #ff8fa3;
+  --color-shop-pink-soft: #ffe4e9;
+  --color-shop-rose-bar: #e8a0ad;
+  --color-shop-bg: #ffffff;
+  --color-shop-muted: #f3f4f6;
+  --color-shop-text: #111827;
+  --color-shop-text-soft: #4b5563;
+  --color-shop-border: #e5e7eb;
+  --color-shop-green: #22c55e;
+  --color-shop-orange: #fb923c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  color: var(--color-shop-text);
+  background: var(--color-shop-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* Logo / hero serif (elegant caps) */
+.font-logo {
+  font-family: 'Playfair Display', ui-serif, Georgia, serif;
+}
+
+/* Logo wordmark “socutesy”: bold rounded serif + deep rose (brand) */
+.font-logo-wordmark {
+  font-family: 'Vollkorn', Georgia, ui-serif, serif;
+  font-weight: 700;
+  color: #ce6684;
+  letter-spacing: 0.03em;
+}

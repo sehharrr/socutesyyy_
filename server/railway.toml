@@ -1,0 +1,7 @@
+# Legacy: server-only deploy (no Docker from repo root).
+# Prefer the Dockerfile at the repo root — see ../railway.toml and ../DEPLOY.md
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
