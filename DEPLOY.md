@@ -67,7 +67,13 @@ docker run --rm -p 3000:3000 -e ADMIN_PASSWORD=test -e SESSION_SECRET=dev-secret
 
 (Add `-v socutesy-data:/data` for a persistent volume.)
 
+## Vercel (frontend only)
+
+The repo root includes **`vercel.json`** so you can import the **whole repo** (do not set “Root Directory” to `frontend` unless you remove the root config).
+
+1. **Environment variables** (Production): `VITE_WHATSAPP_NUMBER`, and **`VITE_API_URL`** = your API base URL (e.g. Railway), **no trailing slash**.
+2. Redeploy after changing env vars.
+
 ## Split deploy (optional)
 
-- **Vercel:** root directory `frontend`, set `VITE_API_URL` to your Railway URL (no trailing slash).
-- **Railway:** deploy **only** `server/` without the root Dockerfile, unset `STATIC_DIR`, set `CORS_ORIGIN` to the Vercel URL. Admin cookies across domains need extra setup; same-origin (this Docker setup) is simpler.
+- **Vercel + Railway API:** `VITE_API_URL` on Vercel points to Railway. Set **`CORS_ORIGIN`** on Railway to your Vercel URL(s). Admin/session across two origins may need extra cookie/CORS tuning; **single Docker deploy** on Railway avoids that.

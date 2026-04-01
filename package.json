@@ -1,0 +1,5 @@
+{
+  "name": "socutesy",
+  "private": true,
+  "description": "Vercel uses vercel.json to build ./frontend from the monorepo root."
+}
