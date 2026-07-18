@@ -1,5 +1,5 @@
 /** Must match [frontend/src/utils/orderFlow.js](frontend/src/utils/orderFlow.js) */
-export const DELIVERY_CHARGE_RS = 400
+export const DELIVERY_CHARGE_RS = 300
 
 function roundMoney(n) {
   return Math.max(0, Math.round(Number(n) || 0))

@@ -17,6 +17,7 @@ import {
   ORDER_ID_SCHEME,
   SHORT_ORDER_ID_RE,
 } from './orderId.js'
+import { getUploadPhotoRequirements } from './uploadLimits.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT) || 3000
@@ -144,6 +145,37 @@ function orderExists(id) {
   const ok = stmt.step()
   stmt.free()
   return ok
+}
+
+function getOrderSlug(orderId) {
+  const db = getDb()
+  const stmt = db.prepare('SELECT slug, order_qty FROM orders WHERE id = ? LIMIT 1')
+  stmt.bind([orderId])
+  if (!stmt.step()) {
+    stmt.free()
+    return { slug: null, orderQty: 1 }
+  }
+  const row = stmt.getAsObject()
+  stmt.free()
+  return {
+    slug: typeof row.slug === 'string' ? row.slug : null,
+    orderQty: Math.max(1, Math.floor(Number(row.order_qty)) || 1),
+  }
+}
+
+function countOrderUploads(orderId) {
+  const db = getDb()
+  const stmt = db.prepare(
+    'SELECT COUNT(*) AS n FROM order_uploads WHERE order_id = ?',
+  )
+  stmt.bind([orderId])
+  if (!stmt.step()) {
+    stmt.free()
+    return 0
+  }
+  const row = stmt.getAsObject()
+  stmt.free()
+  return Number(row.n) || 0
 }
 
 function allocateOrderId() {
@@ -286,6 +318,38 @@ app.post(
     const files = req.files
     if (!files?.length) {
       return res.status(400).json({ error: 'No files (use field name "photos")' })
+    }
+
+    const { slug: orderSlug, orderQty } = getOrderSlug(orderId)
+    const { min: photoMin, max: photoMax } = getUploadPhotoRequirements(
+      orderSlug,
+      orderQty,
+    )
+    if (photoMin != null || photoMax != null) {
+      const existing = countOrderUploads(orderId)
+      const total = existing + files.length
+      const dir = path.join(uploadRoot, orderId)
+      const cleanup = () => {
+        for (const f of files) {
+          try {
+            fs.unlinkSync(path.join(dir, f.filename))
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+      if (photoMin != null && total < photoMin) {
+        cleanup()
+        return res.status(400).json({
+          error: `Upload at least ${photoMin} photos for this product`,
+        })
+      }
+      if (photoMax != null && total > photoMax) {
+        cleanup()
+        return res.status(400).json({
+          error: `Maximum ${photoMax} photos allowed for this product`,
+        })
+      }
     }
 
     const db = getDb()

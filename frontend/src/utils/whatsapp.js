@@ -1,4 +1,4 @@
-const DEFAULT_PHONE = '923227784397'
+const DEFAULT_PHONE = '923716912402'
 
 export function getWhatsAppNumber() {
   const n = import.meta.env.VITE_WHATSAPP_NUMBER

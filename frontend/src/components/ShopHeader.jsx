@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GiftIcon } from './GiftIcon'
-import { IconSearch, IconSliders, IconCart } from './icons'
+
+const MotionLink = motion.create(Link)
+import { IconCart, IconMenu, IconClose } from './icons'
 import { useCart } from '../context/CartContext'
 import { useShop } from '../context/ShopContext'
 import { categories } from '../utils/products'
@@ -10,149 +12,178 @@ import { useOrderFlow } from '../context/OrderFlowContext'
 
 export function ShopHeader() {
   const { count } = useCart()
-  const {
-    searchQuery,
-    setSearchQuery,
-    categoryFilter,
-    setCategoryFilter,
-  } = useShop()
+  const { categoryFilter, setCategoryFilter } = useShop()
+  const navigate = useNavigate()
   const [cartOpen, setCartOpen] = useState(false)
-  const [filterOpen, setFilterOpen] = useState(false)
-  const filterRef = useRef(null)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
-  useEffect(() => {
-    const onDoc = (e) => {
-      if (filterRef.current && !filterRef.current.contains(e.target)) {
-        setFilterOpen(false)
+  const scrollToId = (id, top = false) => {
+    setTimeout(() => {
+      if (top) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        document
+          .getElementById(id)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
-    }
-    document.addEventListener('click', onDoc)
-    return () => document.removeEventListener('click', onDoc)
-  }, [])
+    }, 60)
+  }
+
+  const goHome = () => {
+    setCategoryFilter(null)
+    setMobileNavOpen(false)
+    navigate('/')
+    scrollToId(null, true)
+  }
+
+  const goShopAll = () => {
+    setCategoryFilter(null)
+    setMobileNavOpen(false)
+    navigate('/')
+    scrollToId('products-top')
+  }
+
+  const goCategory = (id) => {
+    setCategoryFilter(id)
+    setMobileNavOpen(false)
+    navigate('/')
+    scrollToId(`section-${id}`)
+  }
+
+  const navLinks = [
+    { key: 'home', label: 'Home', onClick: goHome, active: false },
+    {
+      key: 'all',
+      label: 'Shop All',
+      onClick: goShopAll,
+      active: categoryFilter == null,
+    },
+    ...categories.map((c) => ({
+      key: c.id,
+      label: c.title,
+      onClick: () => goCategory(c.id),
+      active: categoryFilter === c.id,
+    })),
+  ]
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#e5e7eb] bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div className="flex shrink-0 flex-wrap items-center gap-3 sm:gap-4">
-          <Link
+    <header className="sticky top-0 z-50 border-b border-[#f5d0e6] bg-[#fdeef4]/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
+        <div className="flex min-w-0 shrink items-center gap-3 sm:gap-4">
+          <MotionLink
             to="/"
-            className="inline-flex w-fit max-w-full items-center gap-3 rounded-2xl bg-[#fdeef4] px-4 py-3 shadow-sm transition hover:opacity-95 sm:gap-4 sm:px-5 sm:py-3.5"
+            aria-label="socutesy gift shop — home"
+            initial={false}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+            onClick={() => setCategoryFilter(null)}
+            className="group inline-flex h-12 w-fit max-w-full items-center gap-3 rounded-2xl bg-white/60 px-4 shadow-sm ring-1 ring-white/50 backdrop-blur-sm transition-[box-shadow,background-color] hover:bg-white/80 hover:shadow-md hover:ring-[#be3d6a]/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#be3d6a] sm:gap-4 sm:px-5"
           >
-            <GiftIcon className="h-9 w-9 shrink-0 sm:h-11 sm:w-11" />
+            <motion.span
+              className="inline-flex shrink-0"
+              whileHover={{ rotate: [0, -10, 8, -6, 0] }}
+              transition={{ duration: 0.6, ease: 'easeInOut' }}
+            >
+              <GiftIcon className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
+            </motion.span>
             <div className="min-w-0">
-              <p className="font-logo-wordmark text-2xl lowercase leading-tight sm:text-3xl">
+              <p className="truncate font-logo-wordmark text-xl lowercase leading-tight text-[#be3d6a] sm:text-2xl">
                 socutesy
               </p>
-              <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#c49aa8] sm:text-xs">
+              <p className="mt-0.5 truncate text-[10px] font-semibold uppercase tracking-[0.35em] text-[#c49aa8] transition-colors group-hover:text-[#be3d6a] sm:text-xs">
                 GIFT SHOP
               </p>
             </div>
-          </Link>
+          </MotionLink>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <label className="relative hidden min-w-[200px] flex-1 md:block">
-            <span className="sr-only">Search products</span>
-            <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full rounded-xl border border-[#e5e7eb] bg-white py-2.5 pl-10 pr-4 text-sm text-[#111827] placeholder:text-[#9ca3af] focus:border-[#ff8fa3] focus:outline-none focus:ring-2 focus:ring-[#ff8fa3]/30"
-            />
-          </label>
-
-          <button
-            type="button"
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#e5e7eb] bg-white text-[#374151] transition hover:bg-[#f9fafb] md:hidden"
-            aria-label="Search"
-            onClick={() => {
-              const el = document.getElementById('mobile-search')
-              el?.focus()
-            }}
-          >
-            <IconSearch className="h-5 w-5" />
-          </button>
-
-          <div className="relative" ref={filterRef}>
-            <button
-              type="button"
-              onClick={() => setFilterOpen((o) => !o)}
-              className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#e5e7eb] bg-white text-[#374151] transition hover:bg-[#f9fafb]"
-              aria-expanded={filterOpen}
-              aria-label="Filter categories"
-            >
-              <IconSliders className="h-5 w-5" />
-            </button>
-            <AnimatePresence>
-              {filterOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-[#e5e7eb] bg-white py-2 shadow-lg"
-                >
-                  <button
-                    type="button"
-                    className="block w-full px-4 py-2 text-left text-sm text-[#374151] hover:bg-[#f3f4f6]"
-                    onClick={() => {
-                      setCategoryFilter(null)
-                      setFilterOpen(false)
-                    }}
-                  >
-                    All categories
-                  </button>
-                  {categories.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      className="block w-full px-4 py-2 text-left text-sm text-[#374151] hover:bg-[#f3f4f6]"
-                      onClick={() => {
-                        setCategoryFilter(c.id)
-                        setFilterOpen(false)
-                        document.getElementById(`section-${c.id}`)?.scrollIntoView({
-                          behavior: 'smooth',
-                        })
-                      }}
-                    >
-                      {c.title}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+        <nav className="hidden flex-1 items-center justify-center lg:flex">
+          <div className="flex items-center gap-1 rounded-full border border-white/60 bg-white/40 px-2 py-1.5 shadow-sm backdrop-blur-md">
+            {navLinks.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={item.onClick}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  item.active
+                    ? 'bg-[#be3d6a] text-white shadow-sm'
+                    : 'text-[#831843] hover:bg-white/70'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
+        </nav>
 
+        <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => setCartOpen((o) => !o)}
-            className="relative flex h-11 items-center gap-2 rounded-xl bg-[#ff8fa3] px-4 font-semibold text-white shadow-sm transition hover:bg-[#ff7a91]"
+            className="relative flex h-12 items-center gap-2 rounded-xl bg-[#be3d6a] px-4 font-semibold text-white shadow-sm transition hover:bg-[#a8335b] hover:shadow-md active:scale-95"
           >
             <IconCart className="h-5 w-5" />
             <span className="hidden sm:inline">Cart</span>
-            {count > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#111827] px-1 text-[10px] font-bold text-white">
-                {count > 99 ? '99+' : count}
-              </span>
+            <AnimatePresence>
+              {count > 0 && (
+                <motion.span
+                  key={count}
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.4, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+                  className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#111827] px-1 text-[10px] font-bold text-white"
+                >
+                  {count > 99 ? '99+' : count}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen((o) => !o)}
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/60 bg-white/50 text-[#831843] shadow-sm backdrop-blur-sm transition hover:bg-white/80 active:scale-95 lg:hidden"
+            aria-expanded={mobileNavOpen}
+            aria-label="Menu"
+          >
+            {mobileNavOpen ? (
+              <IconClose className="h-5 w-5" />
+            ) : (
+              <IconMenu className="h-5 w-5" />
             )}
           </button>
         </div>
       </div>
 
-      <div className="border-t border-[#f3f4f6] px-4 py-2 md:hidden">
-        <div className="relative">
-          <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
-          <input
-            id="mobile-search"
-            type="search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search products..."
-            className="w-full rounded-xl border border-[#e5e7eb] bg-[#f9fafb] py-2.5 pl-10 pr-4 text-sm focus:border-[#ff8fa3] focus:outline-none focus:ring-2 focus:ring-[#ff8fa3]/30"
-          />
-        </div>
-      </div>
+      <AnimatePresence>
+        {mobileNavOpen && (
+          <motion.nav
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden border-t border-white/50 lg:hidden"
+          >
+            <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 sm:px-6">
+              {navLinks.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={item.onClick}
+                  className={`rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${
+                    item.active
+                      ? 'bg-[#be3d6a] text-white shadow-sm'
+                      : 'text-[#831843] hover:bg-white/70'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
       <CartPopover open={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
@@ -230,14 +261,14 @@ function CartPopover({ open, onClose }) {
                       </p>
                       <Link
                         to={`/product/${line.slug}`}
-                        className="text-xs font-medium text-[#ff8fa3]"
+                        className="text-xs font-medium text-[#be3d6a]"
                         onClick={onClose}
                       >
                         View product
                       </Link>
                       <Link
                         to={`/customize/${line.slug}`}
-                        className="ml-2 text-xs font-medium text-[#ff8fa3]"
+                        className="ml-2 text-xs font-medium text-[#be3d6a]"
                         onClick={onClose}
                       >
                         Customize
@@ -257,7 +288,7 @@ function CartPopover({ open, onClose }) {
             <button
               type="button"
               disabled={items.length === 0}
-              className="mt-4 w-full rounded-xl bg-[#ff8fa3] py-3 text-sm font-semibold text-white hover:bg-[#ff7a91] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-4 w-full rounded-xl bg-[#be3d6a] py-3 text-sm font-semibold text-white hover:bg-[#a8335b] disabled:cursor-not-allowed disabled:opacity-50"
               onClick={() => {
                 if (items.length === 0) return
                 setCheckoutFromCart(items)

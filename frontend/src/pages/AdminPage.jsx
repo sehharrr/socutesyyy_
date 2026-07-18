@@ -157,7 +157,7 @@ export default function AdminPage() {
             />
             <button
               type="submit"
-              className="w-full rounded-2xl bg-gradient-to-r from-[#f472b6] to-[#ec4899] py-3 text-sm font-semibold text-white shadow-lg shadow-pink-300/40"
+              className="w-full rounded-2xl bg-gradient-to-r from-[#d1567f] to-[#be3d6a] py-3 text-sm font-semibold text-white shadow-lg shadow-pink-300/40"
             >
               Sign in
             </button>
@@ -221,7 +221,7 @@ export default function AdminPage() {
                     onClick={() => setSelectedId(o.id)}
                     className={`w-full rounded-xl px-3 py-2.5 text-left text-sm transition ${
                       selectedId === o.id
-                        ? 'bg-gradient-to-r from-[#f472b6] to-[#ec4899] text-white'
+                        ? 'bg-gradient-to-r from-[#d1567f] to-[#be3d6a] text-white'
                         : 'text-[#374151] hover:bg-[#fdf2f8]'
                     }`}
                   >

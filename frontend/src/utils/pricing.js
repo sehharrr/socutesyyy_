@@ -2,8 +2,27 @@
  * Dynamic price helpers for products with fixed price, flat variants, or paper + sides options.
  */
 
+/** True when the product should show a single price on cards (no "from"). */
+export function hasFixedPrice(product) {
+  if (product.price != null) return true
+  if (product.designs?.length && product.sizes?.length) {
+    const prices = product.sizes.map((s) => s.price)
+    return new Set(prices).size === 1
+  }
+  if (product.options?.length) return false
+  if (product.variants?.length) {
+    if (product.variants.length === 1) return true
+    const prices = product.variants.map((v) => v.price)
+    return new Set(prices).size === 1
+  }
+  return true
+}
+
 export function getMinPrice(product) {
   if (product.price != null) return product.price
+  if (product.sizes?.length) {
+    return Math.min(...product.sizes.map((s) => s.price))
+  }
   if (product.options?.length) {
     let min = Infinity
     for (const g of product.options) {
@@ -19,8 +38,13 @@ export function getMinPrice(product) {
   return 0
 }
 
-/** @returns {{ kind: 'simple' } | { kind: 'options', paperIndex: number, sideIndex: number } | { kind: 'variants', index: number }} */
+/**
+ * @returns {{ kind: 'simple' } | { kind: 'options', paperIndex: number, sideIndex: number } | { kind: 'variants', index: number } | { kind: 'keepsake', designIndex: number, sizeIndex: number }}
+ */
 export function defaultSelection(product) {
+  if (product.designs?.length && product.sizes?.length) {
+    return { kind: 'keepsake', designIndex: 0, sizeIndex: 0 }
+  }
   if (product.price != null) return { kind: 'simple' }
   if (product.options?.length) {
     return { kind: 'options', paperIndex: 0, sideIndex: 0 }
@@ -33,6 +57,10 @@ export function defaultSelection(product) {
 
 export function getPrice(product, selection) {
   if (product.price != null) return product.price
+  if (selection.kind === 'keepsake') {
+    const s = product.sizes?.[selection.sizeIndex]
+    return s?.price ?? 0
+  }
   if (selection.kind === 'options') {
     const g = product.options[selection.paperIndex]
     if (!g) return 0
@@ -48,6 +76,12 @@ export function getPrice(product, selection) {
 
 export function getSelectionSummary(product, selection) {
   if (selection.kind === 'simple') return 'Standard'
+  if (selection.kind === 'keepsake') {
+    const d = product.designs?.[selection.designIndex]
+    const s = product.sizes?.[selection.sizeIndex]
+    if (!d || !s) return ''
+    return `${d.label} · Size ${s.size}`
+  }
   if (selection.kind === 'options') {
     const g = product.options[selection.paperIndex]
     const v = g?.variants[selection.sideIndex]

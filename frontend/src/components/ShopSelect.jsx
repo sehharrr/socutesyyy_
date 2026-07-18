@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { IconCheck } from './icons'
 
 /**
  * Custom dropdown (replaces native select) — pink palette, full control over focus/hover.
@@ -91,7 +92,7 @@ export function ShopSelect({ value, options, onChange, disabled = false }) {
                   aria-selected={selected}
                   className={`flex w-full items-center justify-between gap-2 px-4 py-2.5 text-left text-sm font-medium outline-none transition ${
                     selected
-                      ? 'bg-gradient-to-r from-[#f472b6] to-[#ec4899] text-white shadow-sm shadow-pink-300/35 focus-visible:brightness-105 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/40'
+                      ? 'bg-gradient-to-r from-[#d1567f] to-[#be3d6a] text-white shadow-sm shadow-pink-300/35 focus-visible:brightness-105 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/40'
                       : 'text-[#831843] hover:bg-[#fce7f3]/60 focus-visible:bg-[#fdf2f8] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#fbcfe8]'
                   }`}
                   onMouseDown={(e) => e.preventDefault()}
@@ -99,9 +100,7 @@ export function ShopSelect({ value, options, onChange, disabled = false }) {
                 >
                   <span className="min-w-0">{opt}</span>
                   {selected && (
-                    <span className="shrink-0 text-white" aria-hidden>
-                      ✓
-                    </span>
+                    <IconCheck className="h-4 w-4 shrink-0 text-white" />
                   )}
                 </button>
               </li>

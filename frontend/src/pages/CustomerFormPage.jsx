@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getProductBySlug } from '../utils/products'
-import { UPLOAD_PRODUCT_SLUGS } from '../utils/orderFlow'
+import {
+  UPLOAD_PRODUCT_SLUGS,
+  getUploadPhotoRequirements,
+  getOrderTotalAmount,
+  splitAdvancePayment,
+} from '../utils/orderFlow'
 import {
   defaultSelection,
   getPrice,
@@ -11,10 +16,6 @@ import {
 import { CustomerForm } from '../components/CustomerForm'
 import { useOrderFlow } from '../context/OrderFlowContext'
 import { createOrder, uploadOrderPhotos } from '../api/ordersApi'
-import {
-  getOrderTotalAmount,
-  splitAdvancePayment,
-} from '../utils/orderFlow'
 
 export default function CustomerFormPage() {
   const { slug } = useParams()
@@ -100,6 +101,21 @@ export default function CustomerFormPage() {
     setSaveError(null)
     setSaving(true)
     try {
+      if (!isCartCheckout && slug && UPLOAD_PRODUCT_SLUGS.has(slug)) {
+        const qty = Math.max(1, orderQty || 1)
+        const { min, max } = getUploadPhotoRequirements(slug, qty)
+        if (min != null && files.length < min) {
+          setSaveError(`Please upload at least ${min} pictures for this product.`)
+          setSaving(false)
+          return
+        }
+        if (max != null && files.length > max) {
+          setSaveError(`Please upload at most ${max} pictures for this product.`)
+          setSaving(false)
+          return
+        }
+      }
+
       const includeDelivery = data.includeDelivery !== false
       const qty = Math.max(1, orderQty || 1)
       const lineSubtotal = unitPrice * qty
@@ -160,44 +176,52 @@ export default function CustomerFormPage() {
     : product.name
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10 sm:px-6 lg:py-14">
-      <Link
-        to={backHref}
-        className="mb-6 inline-flex text-sm font-medium text-[#9d174d] hover:text-[#831843]"
-      >
-        {backLabel}
-      </Link>
+    <main className="min-h-[70vh] bg-gradient-to-b from-[#FCECEF]/60 via-white to-white px-4 py-10 sm:px-6 lg:py-14">
+      <div className="mx-auto max-w-2xl">
+        <Link
+          to={backHref}
+          className="mb-6 inline-flex text-sm font-medium text-[#9d174d] transition hover:text-[#831843]"
+        >
+          {backLabel}
+        </Link>
 
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-3xl border border-[#fce7f3] bg-[#fffafc] p-6 shadow-inner shadow-pink-100/40 sm:p-8"
-      >
-        <h1 className="font-semibold text-2xl text-[#831843] sm:text-3xl">
-          Your details
-        </h1>
-        <p className="mt-2 text-sm text-[#6b7280]">
-          We need this to confirm{' '}
-          <span className="font-medium text-[#9d174d]">{headingContext}</span>.
-        </p>
-
-        <div className="mt-8">
-          {saveError && (
-            <p
-              className="mb-4 rounded-2xl border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-sm text-[#b91c1c]"
-              role="alert"
-            >
-              {saveError}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="overflow-hidden rounded-[2rem] border border-[#f5d0e6]/80 bg-white shadow-xl shadow-pink-100/50"
+        >
+          <div className="bg-gradient-to-r from-[#be3d6a] to-[#d1567f] px-6 py-6 sm:px-8">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/75">
+              Step 1 of 2
             </p>
-          )}
-          <CustomerForm
-            defaultValues={customer ?? undefined}
-            onSubmit={handleSubmit}
-            submitLabel="Proceed to payment"
-            isSubmitting={saving}
-          />
-        </div>
-      </motion.div>
+            <h1 className="mt-1 font-display text-3xl font-semibold text-white sm:text-4xl">
+              Your details
+            </h1>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-white/90">
+              We need this to confirm{' '}
+              <span className="font-semibold text-white">{headingContext}</span>.
+            </p>
+          </div>
+
+          <div className="px-6 py-6 sm:px-8 sm:py-8">
+            {saveError && (
+              <p
+                className="mb-5 rounded-2xl border border-[#fecaca] bg-[#fef2f8] px-4 py-3 text-sm text-[#b91c1c]"
+                role="alert"
+              >
+                {saveError}
+              </p>
+            )}
+            <CustomerForm
+              defaultValues={customer ?? undefined}
+              onSubmit={handleSubmit}
+              submitLabel="Proceed to payment"
+              isSubmitting={saving}
+            />
+          </div>
+        </motion.div>
+      </div>
     </main>
   )
 }

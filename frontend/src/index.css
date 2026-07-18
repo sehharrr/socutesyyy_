@@ -2,8 +2,8 @@
 
 /* Reference palette: shop UI */
 @theme {
-  --color-shop-pink: #ff8fa3;
-  --color-shop-pink-soft: #ffe4e9;
+  --color-shop-pink: #be3d6a;
+  --color-shop-pink-soft: #f7d4e0;
   --color-shop-rose-bar: #e8a0ad;
   --color-shop-bg: #ffffff;
   --color-shop-muted: #f3f4f6;
@@ -34,6 +34,10 @@ body {
 /* Logo / hero serif (elegant caps) */
 .font-logo {
   font-family: 'Playfair Display', ui-serif, Georgia, serif;
+}
+
+.font-display {
+  font-family: 'Cormorant Garamond', ui-serif, Georgia, serif;
 }
 
 /* Logo wordmark “socutesy”: bold rounded serif + deep rose (brand) */

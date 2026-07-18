@@ -1,7 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getProductBySlug } from '../utils/products'
-import { BowIcon } from '../components/BowIcon'
 
 /**
  * Placeholder until Fabric editor is wired per product.
@@ -17,10 +16,7 @@ export default function CustomizePlaceholder() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full rounded-3xl border border-[#e5e7eb] bg-white p-8 shadow-sm"
       >
-        <p className="flex justify-center text-4xl" aria-hidden>
-          <BowIcon className="h-14 w-16" />
-        </p>
-        <h1 className="font-logo mt-4 text-2xl font-semibold tracking-wide text-[#111827]">
+        <h1 className="font-logo text-2xl font-semibold tracking-wide text-[#111827]">
           {product?.name ?? 'Product'}
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-[#4b5563]">
@@ -29,7 +25,7 @@ export default function CustomizePlaceholder() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-block rounded-2xl bg-[#ff8fa3] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#ff7a91]"
+          className="mt-6 inline-block rounded-2xl bg-[#be3d6a] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a8335b]"
         >
           Back to shop
         </Link>

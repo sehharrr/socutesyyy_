@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getProductBySlug } from '../utils/products'
-import { getOrderFlowType, UPLOAD_PRODUCT_SLUGS } from '../utils/orderFlow'
+import { getOrderFlowType, getUploadPhotoRequirements, UPLOAD_PRODUCT_SLUGS } from '../utils/orderFlow'
+import { IconCamera } from '../components/icons'
 import {
   defaultSelection,
   getPrice,
@@ -15,7 +16,7 @@ export default function UploadPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const product = getProductBySlug(slug)
-  const { setOrderMeta, addFiles, removeFileAt, files, clearFiles } =
+  const { setOrderMeta, addFiles, removeFileAt, files, clearFiles, orderQty } =
     useOrderFlow()
 
   const priceFromNav = location.state?.price
@@ -61,14 +62,38 @@ export default function UploadPage() {
     return null
   }
 
+  const qty = Math.max(1, orderQty || quantityFromNav || 1)
+  const { min: photoMin, max: photoMax } = getUploadPhotoRequirements(slug, qty)
+  const atPhotoLimit = photoMax != null && files.length >= photoMax
+  const remainingSlots =
+    photoMax != null ? Math.max(0, photoMax - files.length) : null
+  const meetsMinimum = photoMin == null || files.length >= photoMin
+  const photosNeeded =
+    photoMin != null ? Math.max(0, photoMin - files.length) : 0
+
+  const requirementHint =
+    photoMin != null && photoMax != null
+      ? `Upload between ${photoMin} and ${photoMax} pictures.`
+      : photoMin != null
+        ? `Upload at least ${photoMin} pictures.`
+        : photoMax != null
+          ? `Maximum ${photoMax} pictures.`
+          : null
+
   const onPick = (e) => {
     const list = e.target.files
-    if (list?.length) addFiles(list)
+    if (!list?.length) return
+    const incoming = Array.from(list)
+    const toAdd =
+      remainingSlots != null
+        ? incoming.slice(0, remainingSlots)
+        : incoming
+    if (toAdd.length) addFiles(toAdd)
     e.target.value = ''
   }
 
   const onContinue = () => {
-    if (files.length === 0) return
+    if (files.length === 0 || !meetsMinimum) return
     navigate(`/order/${slug}/customer`)
   }
 
@@ -93,34 +118,60 @@ export default function UploadPage() {
           Add the images you want us to use for{' '}
           <span className="font-medium text-[#9d174d]">{product.name}</span>.
           You can preview them below before continuing.
+          {requirementHint && (
+            <>
+              {' '}
+              <span className="font-medium text-[#9d174d]">{requirementHint}</span>
+            </>
+          )}
         </p>
 
         <div className="mt-6">
-          <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#fbcfe8] bg-white px-6 py-10 transition hover:border-[#f9a8d4] hover:bg-[#fdf2f8]">
-            <span className="text-3xl" aria-hidden>
-              📷
-            </span>
-            <span className="mt-2 text-sm font-semibold text-[#831843]">
-              Tap to upload images
-            </span>
-            <span className="mt-1 text-xs text-[#9ca3af]">
-              PNG, JPG — multiple files supported
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              className="sr-only"
-              onChange={onPick}
-            />
-          </label>
+          {atPhotoLimit ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#fbcfe8] bg-[#fdf2f8] px-6 py-10 text-center">
+              <p className="text-sm font-semibold text-[#831843]">
+                {photoMax} pictures uploaded
+              </p>
+              <p className="mt-1 text-xs text-[#9ca3af]">
+                Remove a photo below to add a different one.
+              </p>
+            </div>
+          ) : (
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#fbcfe8] bg-white px-6 py-10 transition hover:border-[#f9a8d4] hover:bg-[#fdf2f8]">
+              <IconCamera className="h-10 w-10 text-[#f9a8d4]" />
+              <span className="mt-2 text-sm font-semibold text-[#831843]">
+                Tap to upload images
+              </span>
+              <span className="mt-1 text-xs text-[#9ca3af]">
+                PNG, JPG
+                {photoMax != null
+                  ? ` — up to ${remainingSlots} more (${files.length}/${photoMax})`
+                  : photoMin != null
+                    ? ` — ${files.length} uploaded (${photosNeeded} more needed)`
+                    : ' — multiple files supported'}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="sr-only"
+                onChange={onPick}
+              />
+            </label>
+          )}
         </div>
 
         {files.length > 0 && (
           <div className="mt-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-[#be185d]">
-              Preview ({files.length})
+              Preview ({files.length}
+              {photoMax != null ? ` / ${photoMax}` : photoMin != null ? ` / min ${photoMin}` : ''})
             </p>
+            {!meetsMinimum && photoMin != null && (
+              <p className="mt-2 text-xs font-medium text-[#be185d]">
+                Add {photosNeeded} more picture{photosNeeded === 1 ? '' : 's'} to continue.
+              </p>
+            )}
             <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {files.map((item, i) => (
                 <li
@@ -162,9 +213,9 @@ export default function UploadPage() {
           </Link>
           <button
             type="button"
-            disabled={files.length === 0}
+            disabled={files.length === 0 || !meetsMinimum}
             onClick={onContinue}
-            className="rounded-2xl bg-gradient-to-r from-[#f472b6] to-[#ec4899] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-pink-300/40 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-2xl bg-gradient-to-r from-[#d1567f] to-[#be3d6a] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-pink-300/40 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Continue
           </button>

@@ -2,10 +2,10 @@
  * Shop catalog with structured pricing (fixed / variants / paper options).
  */
 export const categories = [
-  { id: 'polaroids', title: 'Polaroids & prints', showBow: true },
-  { id: 'stationery', title: 'Printables', showBow: true },
-  { id: 'albums', title: 'Albums & books', showBow: true },
-  { id: 'gifts', title: 'Gifts & decor', showBow: true },
+  { id: 'polaroids', title: 'Polaroids & prints' },
+  { id: 'stationery', title: 'Printables' },
+  { id: 'albums', title: 'Magazines & Albums' },
+  { id: 'gifts', title: 'Gifts & decor' },
 ]
 
 export const products = [
@@ -31,17 +31,17 @@ export const products = [
       {
         type: 'Soft Paper',
         variants: [
-          { sides: 6, price: 1500 },
-          { sides: 8, price: 1800 },
-          { sides: 10, price: 2200 },
+          { sides: 6, price: 1800 },
+          { sides: 8, price: 2200 },
+          { sides: 10, price: 2600 },
         ],
       },
       {
         type: 'Hard Paper',
         variants: [
-          { sides: 6, price: 1800 },
-          { sides: 8, price: 2200 },
-          { sides: 10, price: 2500 },
+          { sides: 6, price: 2200 },
+          { sides: 8, price: 2600 },
+          { sides: 10, price: 3000 },
         ],
       },
     ],
@@ -72,17 +72,230 @@ export const products = [
     name: 'Mini Frame',
     category: 'gifts',
     image: '/images/mini-frame-1.png',
-    images: [
-      '/images/mini-frame-1.png',
-      '/images/mini-frame-2.png',
-      '/images/mini-frame-3.png',
-    ],
     imageAlt:
       'Personalized mini frame collage with photos and decorative details, held against green leaves.',
     description:
-      'A sweet mini frame for your favourite photos — perfect for desks, shelves, and gifts.',
-    detailBullets: ['Size 6×6 inches'],
-    price: 1500,
+      'Pick a template, add your photos & text, or send your own layout on WhatsApp for a fully custom mini frame.',
+    detailBullets: [
+      'Size 6×6 inches',
+      'Choose a ready template or custom design',
+      'Perfect for desks, shelves, and gifts',
+    ],
+    sizes: [{ size: '6×6 inches', price: 1500 }],
+    designs: [
+      {
+        id: 'bestie-lyrics',
+        label: 'Bestie Lyrics Collage',
+        image: '/images/mini-frame-1.png',
+        photosRequired: 4,
+        fields: [
+          {
+            key: 'lyric',
+            label: 'Song lyric / quote bubble',
+            placeholder: 'e.g. Does it ever drive you crazy…',
+            required: true,
+            multiline: true,
+          },
+          {
+            key: 'dedication',
+            label: 'Dedication text',
+            placeholder: "e.g. You're my best friend, I'll love you forever",
+            required: true,
+            multiline: true,
+          },
+          {
+            key: 'heartLabel',
+            label: 'Heart sticker text',
+            placeholder: 'e.g. my girl',
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'core-memories',
+        label: 'Core Memories',
+        image: '/images/mini-frame-2.png',
+        photosRequired: 13,
+        fieldHint:
+          'Upload 1 main cutout photo (centre) + 12 small background photos (13 total).',
+        fields: [
+          {
+            key: 'title',
+            label: 'Centre title',
+            placeholder: 'e.g. core memories',
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'favourite-person',
+        label: 'Favourite Person',
+        image: '/images/mini-frame-3.png',
+        photosRequired: 2,
+        fields: [
+          {
+            key: 'message',
+            label: 'Top message',
+            placeholder: "e.g. you're my favourite person <3",
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'custom',
+        label: 'Custom template',
+        whatsappCustom: true,
+        image: '/images/custom-template.png',
+        description:
+          'Send your own layout / reference on WhatsApp and we will create it for you.',
+      },
+    ],
+  },
+  {
+    id: 'keepsake-frame',
+    slug: 'keepsake-frame',
+    name: 'Keepsake Frame',
+    category: 'gifts',
+    image: '/images/keepsake-frame-1.png',
+    imageAlt:
+      'Personalized keepsake photo frames — black-and-white collages with custom text in A4 and A3 sizes.',
+    description:
+      'Pick a template, add your photos & text, or send your own layout on WhatsApp for a fully custom frame.',
+    detailBullets: [
+      'Choose a ready template or custom design',
+      'A4 or A3 size',
+      'Black & white or colour photos',
+    ],
+    sizes: [
+      { size: 'A4', price: 2500 },
+      { size: 'A3', price: 3500 },
+    ],
+    designs: [
+      {
+        id: 'urdu-love',
+        label: 'Urdu Love Collage',
+        image: '/images/keepsake-frame-1.png',
+        photosRequired: 8,
+        fields: [
+          {
+            key: 'topText',
+            label: 'Top text',
+            placeholder: 'e.g. تولدت مبارک زندگیم',
+            required: true,
+          },
+          {
+            key: 'bottomText',
+            label: 'Bottom verse',
+            placeholder: 'Your poem or message',
+            required: true,
+          },
+          {
+            key: 'date',
+            label: 'Date',
+            placeholder: 'e.g. 83.07.13',
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'bestie-collage',
+        label: 'Bestie Layered Collage',
+        image: '/images/keepsake-frame-2.png',
+        photosRequired: 8,
+        fields: [
+          {
+            key: 'note',
+            label: 'Optional note / names',
+            placeholder: 'Names or a short caption (optional)',
+            required: false,
+          },
+        ],
+        fieldHint:
+          'Upload 1 main photo (front) + 7 background collage photos (8 total).',
+      },
+      {
+        id: 'birthday-message',
+        label: 'Birthday Message Frame',
+        image: '/images/keepsake-frame-3.png',
+        photosRequired: 3,
+        fields: [
+          {
+            key: 'header',
+            label: 'Header title',
+            placeholder: 'e.g. HAPPY BIRTHDAY',
+            required: true,
+          },
+          {
+            key: 'subtitle',
+            label: 'Subtitle line',
+            placeholder: 'Handwritten-style line',
+            required: true,
+          },
+          {
+            key: 'message',
+            label: 'Message paragraph',
+            placeholder: 'Your birthday message',
+            required: true,
+            multiline: true,
+          },
+          {
+            key: 'date',
+            label: 'Date',
+            placeholder: 'e.g. 22/08/2003',
+            required: true,
+          },
+          {
+            key: 'qrLink',
+            label: 'QR code link (optional)',
+            placeholder: 'https://… song, playlist, or note',
+            required: false,
+          },
+        ],
+      },
+      {
+        id: 'anniversary-film',
+        label: 'Anniversary Film Strip',
+        image: '/images/keepsake-frame-4.png',
+        photosRequired: 5,
+        fieldHint:
+          'Upload 1 main Polaroid photo + 4 photos for the film strip (5 total).',
+        fields: [
+          {
+            key: 'title',
+            label: 'Title',
+            placeholder: 'e.g. 1st Anniversary',
+            required: true,
+          },
+          {
+            key: 'names',
+            label: 'Names',
+            placeholder: 'e.g. Darrel & Blayne',
+            required: true,
+          },
+          {
+            key: 'date',
+            label: 'Date',
+            placeholder: 'e.g. 20.05.2024',
+            required: true,
+          },
+          {
+            key: 'quote',
+            label: 'Quote',
+            placeholder: 'e.g. You are my today and all of my tomorrows',
+            required: true,
+            multiline: true,
+          },
+        ],
+      },
+      {
+        id: 'custom',
+        label: 'Custom template',
+        whatsappCustom: true,
+        image: '/images/custom-template.png',
+        description:
+          'Send your own layout / reference on WhatsApp and we will create it for you.',
+      },
+    ],
   },
   {
     id: 'coloring-book',
@@ -193,17 +406,83 @@ export const products = [
     slug: 'photobooth-strips',
     name: 'Photobooth Strips',
     category: 'polaroids',
-    image: '/images/photobooth-strips-1.png',
-    images: [
-      '/images/photobooth-strips-1.png',
-      '/images/photobooth-strips-2.png',
-      '/images/photobooth-strips-3.png',
-    ],
+    image: '/images/photobooth-strips-cover.png',
     imageAlt:
-      'Vertical photobooth strips with themed frames — cinema style, bright layouts, and classic strip prints.',
+      'Vertical photobooth strips — heart frames, film strip, camera collage, and soft pink layouts.',
     description:
-      'Vertical strips with themed frames — cinema nights, date ideas, and bestie energy.',
-    price: 250,
+      'Pick a strip template, add your photos & text, or send your own layout on WhatsApp.',
+    detailBullets: [
+      'Themed strip designs',
+      '3–4 photos per strip (depends on template)',
+      'Custom caption on some styles',
+    ],
+    sizes: [{ size: 'Standard strip', price: 250 }],
+    designs: [
+      {
+        id: 'film-memories',
+        label: 'Film Memories',
+        image: '/images/photobooth-strips-1.png',
+        photosRequired: 3,
+        fields: [
+          {
+            key: 'caption',
+            label: 'Bottom caption',
+            placeholder: 'e.g. memories',
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'torn-hearts',
+        label: 'Torn Hearts',
+        image: '/images/photobooth-strips-2.png',
+        photosRequired: 3,
+        fields: [
+          {
+            key: 'note',
+            label: 'Optional note',
+            placeholder: 'Names or a short caption (optional)',
+            required: false,
+          },
+        ],
+      },
+      {
+        id: 'camera-collage',
+        label: 'Camera Collage',
+        image: '/images/photobooth-strips-3.png',
+        photosRequired: 3,
+        fields: [
+          {
+            key: 'note',
+            label: 'Optional note',
+            placeholder: 'Names or a short caption (optional)',
+            required: false,
+          },
+        ],
+      },
+      {
+        id: 'soft-pink',
+        label: 'Soft Pink Strip',
+        image: '/images/photobooth-strips-4.png',
+        photosRequired: 4,
+        fields: [
+          {
+            key: 'caption',
+            label: 'Bottom caption',
+            placeholder: 'e.g. us against the world',
+            required: true,
+          },
+        ],
+      },
+      {
+        id: 'custom',
+        label: 'Custom template',
+        whatsappCustom: true,
+        image: '/images/custom-template.png',
+        description:
+          'Send your own photobooth strip layout on WhatsApp and we will create it for you.',
+      },
+    ],
   },
   {
     id: 'stickers',
@@ -222,7 +501,7 @@ export const products = [
     imageAlt:
       'Die-cut sticker sheets — Y2K girly sets, love themes, retro media, red aesthetic, Starry Night, and cinema icons.',
     description:
-      'Die-cut sticker sheets — Y2K, love, retro, and cinema vibes. Pick your favourite design.',
+      'Die-cut sticker sheets — Y2K, love, retro, and cinema vibes. Pick a design or send your own sheet on WhatsApp.',
     variantSelectLabel: 'Sticker sheet',
     variants: [
       { label: 'Sticker sheet 1', price: 250, image: '/images/stickers-1.png' },
@@ -231,6 +510,12 @@ export const products = [
       { label: 'Sticker sheet 4', price: 250, image: '/images/stickers-4.png' },
       { label: 'Sticker sheet 5', price: 250, image: '/images/stickers-5.png' },
       { label: 'Sticker sheet 6', price: 250, image: '/images/stickers-6.png' },
+      {
+        label: 'Custom sticker sheet',
+        price: 250,
+        image: '/images/custom-template.png',
+        whatsappCustom: true,
+      },
     ],
   },
   {

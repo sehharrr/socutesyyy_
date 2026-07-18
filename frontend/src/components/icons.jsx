@@ -88,3 +88,44 @@ export function IconMail({ className }) {
     </svg>
   )
 }
+
+export function IconMenu({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function IconClose({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function IconChevronDown({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function IconCheck({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+      <path d="M5 12l5 5L19 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function IconCamera({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M4 7h4l2-3h8l2 3h4v12H4V7z" strokeLinejoin="round" />
+      <circle cx="12" cy="13" r="3.5" />
+    </svg>
+  )
+}

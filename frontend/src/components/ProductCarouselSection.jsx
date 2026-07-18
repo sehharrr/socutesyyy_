@@ -1,10 +1,11 @@
 import { useRef, useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { ProductCard } from './ProductCard'
 import { IconChevronLeft, IconChevronRight } from './icons'
 import { useShop } from '../context/ShopContext'
 import { getProductsByCategory } from '../utils/products'
 
-export function ProductCarouselSection({ categoryId, title, showBow }) {
+export function ProductCarouselSection({ categoryId, title }) {
   const { searchQuery, categoryFilter } = useShop()
   const scrollRef = useRef(null)
 
@@ -32,14 +33,18 @@ export function ProductCarouselSection({ categoryId, title, showBow }) {
       className="border-b border-[#f3f4f6] bg-white py-10 sm:py-14"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <h2 className="mb-8 font-semibold text-2xl text-[#111827] sm:text-3xl">
-          {title}
-          {showBow ? (
-            <span className="ml-2 inline-block" aria-hidden>
-              🎀
-            </span>
-          ) : null}
-        </h2>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-8 flex items-center gap-3"
+        >
+          <span className="h-6 w-1.5 rounded-full bg-[#be3d6a]" aria-hidden />
+          <h2 className="font-semibold text-2xl text-[#831843] sm:text-3xl">
+            {title}
+          </h2>
+        </motion.div>
 
         <div className="relative">
           <button
